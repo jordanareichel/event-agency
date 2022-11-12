@@ -13,7 +13,7 @@ export const Wrapper = styled(Paper)`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background-color: #202024;
+  background-color: black;
 `;
 
 export const NavLeft = styled.div`

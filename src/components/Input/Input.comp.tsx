@@ -2,13 +2,12 @@ import React, { useCallback, useMemo } from 'react';
 
 import currency from '../../utils/currency';
 
-import { Wrapper, TextInput, IconInput, Label } from './Input.styles';
+import { Wrapper, TextInput, IconInput } from './Input.styles';
 import { InputProps, InputMaskEnum } from './Input.types';
 
 export const Input: React.FC<InputProps> = props => {
   const {
     icon,
-    label,
     mask,
     block,
     value,
@@ -119,7 +118,6 @@ export const Input: React.FC<InputProps> = props => {
         value={renderValue}
         onChange={handleChange}
       />
-
       {renderIcon}
     </Wrapper>
   );
