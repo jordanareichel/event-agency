@@ -15,7 +15,7 @@ export type UserProps = {
 };
 
 export default function Home() {
-  const { isLogged } = useContext(UserContext);
+  const { isLogged, logout } = useContext(UserContext);
   const [data, setData] = useState<EventResume[]>([]);
   const [value, setValue] = useState<string>('');
 
@@ -40,9 +40,16 @@ export default function Home() {
     setValue(value);
   }
 
-
   function handleViewEvent(code: string) {
     router.push(`/details/${code}`);
+  }
+
+  function handleNavigation() {
+    if (isLogged) {
+      logout();
+    } else {
+      router.push('/login');
+    }
   }
 
   return (
@@ -50,7 +57,7 @@ export default function Home() {
       <Header
         title={isLogged ? 'Logout' : 'Login'}
         isLogged={isLogged}
-        url={isLogged ? '/logout' : '/login'}
+        logout={handleNavigation}
       />
       <Search>
         <Input

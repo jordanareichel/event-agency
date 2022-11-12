@@ -2,6 +2,7 @@ import React from 'react';
 
 import Link from 'next/link';
 
+import { Button } from '../Button';
 import { Image } from '../Image';
 import { Text } from '../Text';
 
@@ -9,7 +10,7 @@ import { Wrapper, NavLeft, ContainerLogo, NavRight } from './Header.styles';
 import { HeaderProps } from './Header.types';
 
 export const Header: React.FC<HeaderProps> = props => {
-  const { title, url, isLogged, ...rest } = props;
+  const { title, isLogged, logout, ...rest } = props;
 
   return (
     <Wrapper {...rest}>
@@ -32,9 +33,9 @@ export const Header: React.FC<HeaderProps> = props => {
             <Text color="white">Meus ingressos</Text>
           </Link>
         )}
-        <Link href={url}>
+        <Button variant="ghost" onClick={logout}>
           <Text color="white">{title}</Text>
-        </Link>
+        </Button>
       </NavRight>
     </Wrapper>
   );

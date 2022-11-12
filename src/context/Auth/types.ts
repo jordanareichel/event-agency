@@ -10,7 +10,7 @@ export interface UserContextData {
   isLogged: boolean;
   signInData: (data: SignInData) => Promise<void>;
   createAccountUser: (data: User) => Promise<void>;
-  // logout: () => void;
+  logout: () => void;
 }
 
 export interface UserProviderProps {

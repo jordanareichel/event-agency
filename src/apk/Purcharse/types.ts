@@ -1,4 +1,4 @@
-import { EventResume } from '../Events/types';
+import { PaymentMethodEnum } from '../Events/types';
 
 export type Purcharse = {
   paymentCode: string;
@@ -15,6 +15,9 @@ export type Purcharse = {
   securityCode: string;
   cpf?: string;
   zip?: string;
+  value: number;
+  eventTitle?: string;
+  eventLocal?: string;
+  eventDate?: string;
+  paymentForm?: PaymentMethodEnum;
 };
-
-export type PurcharseWithEvent = Purcharse & EventResume;

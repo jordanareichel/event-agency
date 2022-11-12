@@ -1,5 +1,7 @@
 import React, { createContext, useState } from 'react';
 
+import Cookies from 'js-cookie';
+
 import { signIn } from '../../apk/Auth';
 import { Auth } from '../../apk/Auth/types';
 import { createAccount } from '../../apk/User';
@@ -27,11 +29,12 @@ export const UserProvider: React.FC<UserProviderProps> = props => {
     localStorage.setItem('user', JSON.stringify({ ...response }));
   }
 
-  // async function logout() {
-  //   Cookies.remove('user');
-  //   setIsLogged(false);
-  //   setUser(DEFAULT_USER_DATA);
-  // }
+  async function logout() {
+    Cookies.remove('user');
+    setIsLogged(false);
+    setUser(DEFAULT_USER_DATA);
+    localStorage.removeItem('user');
+  }
 
   async function createAccountUser(data: User) {
     const response = await createAccount(data);
@@ -55,7 +58,7 @@ export const UserProvider: React.FC<UserProviderProps> = props => {
         isLogged,
         signInData,
         createAccountUser,
-        // logout,
+        logout,
       }}>
       {children}
     </UserContext.Provider>

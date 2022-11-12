@@ -26,7 +26,10 @@ export const Card: React.FC<CardProps> = props => {
   } = props;
 
   return (
-    <Wrapper {...Object.assign({ ...rest })} flexDirection={"column"} onClick={onClick}>
+    <Wrapper
+      {...Object.assign({ ...rest })}
+      flexDirection={'column'}
+      onClick={onClick}>
       <Image src={image} alt={'Image Event'} />
       <Body>
         <Title align="left" size={14} weight="bold" height="16">
@@ -37,26 +40,26 @@ export const Card: React.FC<CardProps> = props => {
             {description}
           </Description>
         )}
+        {totalValue && (
+          <Text size={14} align="left" weight="bold">
+            Valor total: {currency(totalValue)}
+          </Text>
+        )}
         <Col>
-        <Row>
-          <EventNote fontSize="small" />
-          <Text size={14} align="left" weight="bold">
-            {date}
-          </Text>
-        </Row>
-        <Row>
-          <AddLocation fontSize="small" />
-          <Text size={14} align="left" weight="bold">
-            {local}
-          </Text>
-        </Row>
+          <Row>
+            <EventNote fontSize="small" />
+            <Text size={14} align="left" weight="bold">
+              {date}
+            </Text>
+          </Row>
+          <Row>
+            <AddLocation fontSize="small" />
+            <Text size={14} align="left" weight="bold">
+              {local}
+            </Text>
+          </Row>
         </Col>
       </Body>
-      {totalValue && (
-       <Text size={14} align="left" weight="bold">
-       {currency(totalValue)}
-      </Text>
-      )}
     </Wrapper>
   );
 };

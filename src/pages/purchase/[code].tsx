@@ -5,7 +5,8 @@ import { useRouter } from 'next/router';
 import { RadioGroup, Radio } from 'react-radio-input';
 
 import { listEvents } from '../../apk/Events';
-import { EventResume } from '../../apk/Events/types';
+import { EventResume, PaymentMethodEnum } from '../../apk/Events/types';
+import { createPayment } from '../../apk/Purcharse';
 import { Purcharse } from '../../apk/Purcharse/types';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
@@ -41,13 +42,15 @@ const REGISTER_DEFAULT: Purcharse = {
   securityCode: '',
   cpf: '',
   zip: '',
+  paymentCode: '',
+  value: 0,
 };
 
 export enum ModalTypeEnum {
   'close' = 'CLOSE',
-  'success' = 'SUCCESS',
   'error' = 'ERROR',
   'confirm' = 'CONFIRM',
+  'success' = 'SUCCESS',
 }
 
 export default function Payment() {
@@ -57,14 +60,17 @@ export default function Payment() {
   const code = query.code;
 
   const [errors, setErrors] = useState({});
-  const [event, setEvent] = useState<EventResume>();
+  const [event, setEvent] = useState<EventResume>({} as EventResume);
   const [loading, setLoading] = useState<boolean>(false);
   const [modalType, setModalType] = useState<ModalTypeEnum>(
     ModalTypeEnum.close,
   );
+  const [modalMessage, setModalMessage] = useState<string>('');
   const [register, setRegister] = useState<Purcharse>({
     ...REGISTER_DEFAULT,
   });
+  const initialValue = 'credit';
+  const [typeCard, setTypeCard] = useState(initialValue);
 
   useEffect(() => {
     handleFindEvent();
@@ -78,7 +84,7 @@ export default function Payment() {
     try {
       const response = await listEvents();
       const event = response.find(item => item.code === code);
-      if(event) {
+      if (event) {
         setEvent(event);
       }
     } catch (err) {
@@ -175,30 +181,44 @@ export default function Payment() {
     }
 
     setModalType(ModalTypeEnum.confirm);
+    setModalMessage(
+      `Deseja confirmar a compra do ingresso ${
+        event?.title
+      } no valor de ${currency(event?.totalValue)}?`,
+    );
   }
 
-  function handleConfirmPayment() {
-    router.push('/success');
-    setModalType(ModalTypeEnum.close);
+  async function handleCreatePayment() {
+    try {
+      setLoading(true);
+      const response = await createPayment({
+        ...register,
+        eventDate: event?.createdAt,
+        eventLocal: event?.local,
+        eventTitle: event?.title,
+        paymentForm:
+          typeCard === 'credit'
+            ? PaymentMethodEnum.credit
+            : PaymentMethodEnum.paypal,
+      });
+
+      localStorage.setItem('createPayment', JSON.stringify({ ...response }));
+      setModalType(ModalTypeEnum.success);
+      setModalMessage(
+        'Parabéns você acabou de adquirir o ingresso. O que deseja fazer agora?',
+      );
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+      setModalType(ModalTypeEnum.error);
+      setModalMessage('Algo deu errado! Tente novamente.');
+    }
   }
 
-  const renderLegend = () => {
-    <div>
-      {modalType === ModalTypeEnum.success ? (
-        <Text>
-          Parabéns! Você acaba de comprar o ingresso {event?.title} no valor de{' '}
-          {currency(event?.value)}!
-        </Text>
-      ) : modalType === ModalTypeEnum.confirm ? (
-        <Text color="black">
-          Deseja confirmar pagamento do ingresso {event?.title} no valor de{' '}
-          {currency(event?.value)}!
-        </Text>
-      ) : (
-        <Text color="black">Algo deu errado! {errors}! Tente novamente</Text>
-      )}
-    </div>;
-  };
+  function handleNavigate() {
+    router.push('/tickets');
+  }
 
   return (
     <Wrapper>
@@ -213,22 +233,26 @@ export default function Payment() {
         visible={modalType !== ModalTypeEnum.close}
         actions={[
           {
-            color: 'secondary',
+            color: '#EE4629',
             variant: 'ghost',
             label: 'Cancelar',
             onClick: handleClose,
           },
           {
             label: 'Confirmar',
+            color: '#129E57',
+            variant: 'ghost',
             onClick:
               modalType === ModalTypeEnum.confirm
-                ? validations
+                ? handleCreatePayment
                 : modalType === ModalTypeEnum.success
-                ? handleConfirmPayment
+                ? handleNavigate
                 : handleClose,
           },
         ]}>
-        {renderLegend}
+        <Text color="black" size={16} align="left" height={18}>
+          {modalMessage}
+        </Text>
       </Modal>
       <main>
         <Body>
@@ -287,10 +311,9 @@ export default function Payment() {
                   block
                   type={'text'}
                   placeholder="Estado"
-                  maxLength={2}
                   value={register.state}
                   onChangeText={value => handleChange('state', value)}
-                  color={_.get(errors, 'age') && 'state'}
+                  color={_.get(errors, 'state') && 'state'}
                 />
               </FormGroup>
             </FormInput>
@@ -334,14 +357,14 @@ export default function Payment() {
             <FormInput>
               <InputRadio
                 name="favoriteFruit"
-                onChange={() => console.log('')}
-                selectedValue={() => console.log('')}>
+                onChange={setTypeCard}
+                selectedValue={typeCard}>
                 <Text color="white">
-                  <Radio id="bananaOption" value="banana" />
+                  <Radio id="bananaOption" value="credit" />
                   Cartão de crédito
                 </Text>
                 <Paypal color="white">
-                  <Radio id="bananaOption" value="banana" />
+                  <Radio id="bananaOption" value="paypal" />
                   Paypal
                 </Paypal>
               </InputRadio>
@@ -362,9 +385,10 @@ export default function Payment() {
               <FormGroup help={_.get(errors, 'cardNumber')}>
                 <Input
                   block
-                  type={'number'}
+                  type={'text'}
                   placeholder={'Numero no cartão'}
                   value={register.cardNumber}
+                  maxLength={16}
                   onChangeText={value => handleChange('cardNumber', value)}
                   color={_.get(errors, 'cardNumber') && 'error'}
                 />
@@ -389,7 +413,8 @@ export default function Payment() {
                 <Input
                   block
                   type={'text'}
-                  placeholder={'Data de expiração'}
+                  placeholder={'Data de expiração MM/YYYY'}
+                  maxLength={7}
                   value={register.expirationDate}
                   onChangeText={value => handleChange('expirationDate', value)}
                   color={_.get(errors, 'expirationDate') && 'error'}
@@ -418,20 +443,21 @@ export default function Payment() {
           </Form>
         </Body>
       </main>
-        {event && (
-          <Card
-            height={500}
-            size={450}
-            image={event.image}
-            totalValue={event.totalValue}
-            title={event.title}
-            description={event.description}
-            date={event.createdAt}
-            local={event.local} onSubmit={function (): void {
-              throw new Error('Function not implemented.');
-            } }          
-          />
-        )}
+      {event && (
+        <Card
+          height={600}
+          size={450}
+          image={event.image}
+          totalValue={event.totalValue}
+          title={event.title}
+          description={event.description}
+          date={event.createdAt}
+          local={event.local}
+          onSubmit={function (): void {
+            throw new Error('Function not implemented.');
+          }}
+        />
+      )}
     </Wrapper>
   );
 }

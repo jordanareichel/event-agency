@@ -89,6 +89,10 @@ export default function Details() {
     setSelectedBatch(code);
   }
 
+  function handleGoLogin() {
+    router.push('/login');
+  }
+
   return (
     <Wrapper>
       <Header
@@ -111,7 +115,12 @@ export default function Details() {
             color: '#129E57',
             variant: 'ghost',
             onClick:
-              modalType === ModalTypeEnum.confirm ? handleSubmit : handleClose,
+              modalType === ModalTypeEnum.confirm
+                ? handleSubmit
+                : modalType === ModalTypeEnum.error &&
+                  modalMessage.includes('Login')
+                ? handleGoLogin
+                : handleClose,
           },
         ]}>
         <Text size={16} align={'left'} height={20}>

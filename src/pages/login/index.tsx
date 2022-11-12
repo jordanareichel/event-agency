@@ -3,6 +3,7 @@ import React, { useContext, useState } from 'react';
 import _ from 'lodash';
 import router from 'next/router';
 
+import { findCep } from '../../apk/Integration';
 import { User } from '../../apk/User/types';
 import { Button } from '../../components/Button';
 import { FormGroup } from '../../components/FormGroup';
@@ -34,7 +35,8 @@ const REGISTER_DEFAULT: User = {
 };
 
 export default function Login() {
-  const { signInData, createAccountUser, isLogged } = useContext(UserContext);
+  const { signInData, createAccountUser, isLogged, logout } =
+    useContext(UserContext);
   const [loading, setLoading] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [errors, setErrors] = useState({});
@@ -48,9 +50,33 @@ export default function Login() {
   });
 
   function handleChange(key: string, value: any) {
+    if (key === 'zip' && value.length === 10) {
+      consultCep(value);
+    }
+
     setErrors(prevErrors => ({ ...prevErrors, [key]: undefined }));
     setRegister(prevRegister => ({ ...prevRegister, [key]: value }));
     setCreated(prevRegister => ({ ...prevRegister, [key]: value }));
+  }
+
+  async function consultCep(value: string) {
+    try {
+      const cep = await findCep({ cep: value });
+
+      if (cep) {
+        setCreated(prevRegister => {
+          Object.keys(cep).forEach((key: any) => {
+            _.set(prevRegister, key, cep[key]);
+          });
+
+          return { ...prevRegister };
+        });
+      }
+    } catch (err) {
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleLogin() {
@@ -195,12 +221,20 @@ export default function Login() {
     }
   }
 
+  function handleNavigation() {
+    if (isLogged) {
+      logout();
+    } else {
+      router.push('/login');
+    }
+  }
+
   return (
     <Wrapper>
       <Header
         title={isLogged ? 'Logout' : 'Login'}
         isLogged={isLogged}
-        url={isLogged ? '/logout' : '/login'}
+        logout={handleNavigation}
       />
       <Modal
         loading={loading}
@@ -321,6 +355,7 @@ export default function Login() {
                 disabled={loading}
                 value={created.zip}
                 mask={InputMaskEnum.cep}
+                maxLength={10}
                 onChangeText={value => handleChange('zip', value)}
                 color={_.get(errors, 'zip') && 'error'}
               />
@@ -365,7 +400,7 @@ export default function Login() {
               <Input
                 block
                 type={'text'}
-                placeholder={'number'}
+                placeholder={'Número'}
                 disabled={loading}
                 value={created.number}
                 onChangeText={value => handleChange('number', value)}

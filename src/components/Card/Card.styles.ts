@@ -1,8 +1,8 @@
 import styled, { css } from 'styled-components';
 
 import { Button } from '../Button';
+import { Paper } from '../Paper';
 import { Text } from '../Text';
-import {Paper} from '../Paper';
 
 import { CardProps } from './Card.types';
 
@@ -10,7 +10,7 @@ export const Wrapper = styled(Paper)<CardProps>`
   ${({ size, height }) => css`
     background-color: #ffffff;
     width: ${size ? size : '235'}px;
-    min-height:${height ? height : '290'}px;
+    min-height: ${height ? height : '290'}px;
   `}
   display: flex;
   border-radius: 8px;
