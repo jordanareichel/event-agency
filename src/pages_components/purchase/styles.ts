@@ -50,6 +50,10 @@ export const InputRadio = styled(RadioGroup)`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+
+  & > p > input {
+    margin-right: 4px;
+  }
 `;
 
 export const Paypal = styled(Text)`

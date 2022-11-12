@@ -17,7 +17,14 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "outDir": "dist/ts-out",
-    "sourceMap": true
+    "sourceMap": true,
+    "paths": {
+      "@apk/*": ["./src/apk/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@contexts/*": ["./src/contexts/*"],
+      "@components/*": ["./src/components/*"],
+      "@assets/*": ["./src/assets/*"]
+    }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

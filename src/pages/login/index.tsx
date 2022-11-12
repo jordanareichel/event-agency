@@ -3,7 +3,6 @@ import React, { useContext, useState } from 'react';
 import _ from 'lodash';
 import router from 'next/router';
 
-import { findCep } from '../../apk/Integration';
 import { User } from '../../apk/User/types';
 import { Button } from '../../components/Button';
 import { FormGroup } from '../../components/FormGroup';
@@ -50,33 +49,9 @@ export default function Login() {
   });
 
   function handleChange(key: string, value: any) {
-    if (key === 'zip' && value.length === 10) {
-      consultCep(value);
-    }
-
     setErrors(prevErrors => ({ ...prevErrors, [key]: undefined }));
     setRegister(prevRegister => ({ ...prevRegister, [key]: value }));
     setCreated(prevRegister => ({ ...prevRegister, [key]: value }));
-  }
-
-  async function consultCep(value: string) {
-    try {
-      const cep = await findCep({ cep: value });
-
-      if (cep) {
-        setCreated(prevRegister => {
-          Object.keys(cep).forEach((key: any) => {
-            _.set(prevRegister, key, cep[key]);
-          });
-
-          return { ...prevRegister };
-        });
-      }
-    } catch (err) {
-      setLoading(false);
-    } finally {
-      setLoading(false);
-    }
   }
 
   async function handleLogin() {

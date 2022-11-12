@@ -1,15 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
 
+import { listEvents } from '@apk/Events';
+import { EventResume } from '@apk/Events/types';
+import { Button } from '@components/Button';
+import { Card } from '@components/Card';
+import { Header } from '@components/Header';
+import { Image } from '@components/Image';
+import { Modal } from '@components/Modal';
+import { Text } from '@components/Text';
 import { useRouter } from 'next/router';
 
-import { listEvents } from '../../apk/Events';
-import { EventResume } from '../../apk/Events/types';
-import { Button } from '../../components/Button';
-import { Card } from '../../components/Card';
-import { Header } from '../../components/Header';
-import { Image } from '../../components/Image';
-import { Modal } from '../../components/Modal';
-import { Text } from '../../components/Text';
 import { UserContext } from '../../context/Auth';
 import {
   Wrapper,
@@ -33,7 +33,7 @@ export enum ModalTypeEnum {
 }
 
 export default function Details() {
-  const { isLogged } = useContext(UserContext);
+  const { isLogged, logout } = useContext(UserContext);
   const router = useRouter();
   const query = router.query;
   const code = query.code;
@@ -93,12 +93,20 @@ export default function Details() {
     router.push('/login');
   }
 
+  function handleNavigation() {
+    if (isLogged) {
+      logout();
+    } else {
+      router.push('/login');
+    }
+  }
+
   return (
     <Wrapper>
       <Header
         title={isLogged ? 'Logout' : 'Login'}
         isLogged={isLogged}
-        url={isLogged ? '/logout' : '/login'}
+        logout={handleNavigation}
       />
       <Modal
         title="Atenção!"

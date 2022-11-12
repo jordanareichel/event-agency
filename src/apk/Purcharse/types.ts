@@ -20,4 +20,5 @@ export type Purcharse = {
   eventLocal?: string;
   eventDate?: string;
   paymentForm?: PaymentMethodEnum;
+  batch?: string;
 };

@@ -1,20 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react';
 
+import { listEvents } from '@apk/Events';
+import { EventResume, PaymentMethodEnum } from '@apk/Events/types';
+import { createPayment } from '@apk/Purcharse';
+import { Purcharse } from '@apk/Purcharse/types';
+import { Button } from '@components/Button';
+import { Card } from '@components/Card';
+import { FormGroup } from '@components/FormGroup';
+import { Header } from '@components/Header';
+import { Input, InputMaskEnum } from '@components/Input';
+import { Modal } from '@components/Modal';
+import { Text } from '@components/Text';
 import _ from 'lodash';
 import { useRouter } from 'next/router';
-import { RadioGroup, Radio } from 'react-radio-input';
+import { Radio } from 'react-radio-input';
 
-import { listEvents } from '../../apk/Events';
-import { EventResume, PaymentMethodEnum } from '../../apk/Events/types';
-import { createPayment } from '../../apk/Purcharse';
-import { Purcharse } from '../../apk/Purcharse/types';
-import { Button } from '../../components/Button';
-import { Card } from '../../components/Card';
-import { FormGroup } from '../../components/FormGroup';
-import { Header } from '../../components/Header';
-import { Input, InputMaskEnum } from '../../components/Input';
-import { Modal } from '../../components/Modal';
-import { Text } from '../../components/Text';
 import { UserContext } from '../../context/Auth';
 import {
   Wrapper,
@@ -54,7 +54,7 @@ export enum ModalTypeEnum {
 }
 
 export default function Payment() {
-  const { isLogged } = useContext(UserContext);
+  const { isLogged, logout } = useContext(UserContext);
   const router = useRouter();
   const query = router.query;
   const code = query.code;
@@ -144,7 +144,7 @@ export default function Payment() {
     }
 
     if (!city) {
-      _.set(validations, 'city', 'Informe o cidade.');
+      _.set(validations, 'city', 'Informe a cidade.');
     }
 
     if (!state) {
@@ -220,12 +220,20 @@ export default function Payment() {
     router.push('/tickets');
   }
 
+  function handleGoLogout() {
+    if (isLogged) {
+      logout();
+    } else {
+      router.push('/login');
+    }
+  }
+
   return (
     <Wrapper>
       <Header
         title={isLogged ? 'Logout' : 'Login'}
         isLogged={isLogged}
-        url={isLogged ? '/logout' : '/login'}
+        logout={handleGoLogout}
       />
       <Modal
         title="Atenção!"

@@ -9,7 +9,7 @@ import hexToHsl from './hexToHsl';
 export const Button: React.FC<ButtonProps> = props => {
   const {
     icon,
-    variant,
+    variant = 'contained',
     disabled,
     children,
     iconSize,

@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 
+import router from 'next/router';
+
 import { PaymentMethodEnum } from '../../apk/Events/types';
 import { listPurcharses } from '../../apk/Purcharse';
-import { PurcharseWithEvent } from '../../apk/Purcharse/types';
+import { Purcharse } from '../../apk/Purcharse/types';
 import { Header } from '../../components/Header';
 import { Modal } from '../../components/Modal';
 import { UserContext } from '../../context/Auth';
@@ -38,8 +40,8 @@ export const COLUMNS = [
 ];
 
 export default function Tickets() {
-  const { isLogged } = useContext(UserContext);
-  const [tickets, setTickets] = useState<PurcharseWithEvent[]>([]);
+  const { isLogged, logout } = useContext(UserContext);
+  const [tickets, setTickets] = useState<Purcharse[]>([]);
 
   useEffect(() => {
     getMyTickets();
@@ -54,12 +56,20 @@ export default function Tickets() {
     }
   }
 
+  function handleNavigation() {
+    if (isLogged) {
+      logout();
+    } else {
+      router.push('/login');
+    }
+  }
+
   return (
     <Wrapper>
       <Header
         title={isLogged ? 'Logout' : 'Login'}
         isLogged={isLogged}
-        url={isLogged ? '/logout' : '/login'}
+        logout={handleNavigation}
       />
 
       {tickets.length ? (
@@ -78,10 +88,10 @@ export default function Tickets() {
           <tbody>
             {tickets.map((item, index) => (
               <tr key={index} className="bg-white border-b ">
-                <th scope="row">#{item.code}</th>
-                <td>{item.title}</td>
+                <th scope="row">#{item.paymentCode}</th>
+                <td>{item.eventTitle}</td>
                 <td>{item.batch}</td>
-                <td>{item.createdAt}</td>
+                <td>{item.eventDate}</td>
                 <td>
                   {item.paymentForm === PaymentMethodEnum.credit
                     ? 'VISA'

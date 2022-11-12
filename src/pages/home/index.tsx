@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 
+import { listEvents } from '@apk/Events';
+import { EventResume } from '@apk/Events/types';
+import { Card } from '@components/Card';
+import { Header } from '@components/Header';
+import { Input } from '@components/Input';
 import router from 'next/router';
 
-import { listEvents } from '../../apk/Events';
-import { EventResume } from '../../apk/Events/types';
-import { Card } from '../../components/Card';
-import { Header } from '../../components/Header/Header.comp';
-import { Input } from '../../components/Input';
 import { UserContext } from '../../context/Auth/context';
 import { CardView, Wrapper, Search } from '../../pages_components/home/styles';
 export type UserProps = {
