@@ -60,7 +60,7 @@ export default function Login() {
       if (!register.login) {
         _.set(newErrors, 'login', 'Informe o E-mail.');
       } else if (!mailValidator.validate(register.login.toString())) {
-        _.set(newErrors, 'login', 'CPF inválido.');
+        _.set(newErrors, 'login', 'E-mail inválido.');
       }
 
       if (!register.password) {
@@ -121,7 +121,7 @@ export default function Login() {
       if (!userMail) {
         _.set(validations, 'userMail', 'Informe um e-mail');
       } else if (!mailValidator.validate(userMail.toString())) {
-        _.set(validations, 'login', 'CPF inválido.');
+        _.set(validations, 'login', 'E-mail inválido.');
       }
 
       if (!name) {

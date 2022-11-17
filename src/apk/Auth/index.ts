@@ -8,7 +8,7 @@ export const signIn = async (data: SignInData): Promise<Auth> => {
   const { mail, password } = data;
 
   if (mail !== 'admin@admin.com' || password !== '123456') {
-    throw new Error('CPF ou senha incorreto. Tente novamente.');
+    throw new Error('E-mail ou senha incorreto. Tente novamente.');
   }
 
   return {
