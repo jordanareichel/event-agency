@@ -8,6 +8,7 @@ const cssWithValue = css<{ color?: string }>`
   input {
     padding-top: 16px;
     color: white;
+    background-color: #323238;
   }
 
   label {

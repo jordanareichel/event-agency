@@ -480,8 +480,6 @@ const events = [
 ];
 
 export const listEvents = async (): Promise<EventResume[]> => {
-  await delay();
-
   return events;
 };
 
